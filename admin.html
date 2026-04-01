@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Umpire Panel - Smasher Badminton Club</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="admin-header">
+        <div class="header-content">
+            <div class="header-left">
+                <a href="index.html" class="back-btn" title="Back to Home">&larr;</a>
+                <div class="header-title">
+                    <h1>Smasher Badminton Club</h1>
+                    <p>Umpire Control Panel</p>
+                </div>
+            </div>
+            <div class="header-status">
+                <div class="set-indicator" id="setIndicator">Set 1</div>
+                <div class="set-timer" id="setTimer">00:00</div>
+                <div class="match-status-badge not-started" id="matchStatusBadge">Not Started</div>
+            </div>
+        </div>
+    </header>
+
+    <main class="admin-main">
+        <!-- Setup Section (shown before match starts) -->
+        <section class="setup-section" id="setupSection">
+            <h2>Match Setup</h2>
+            <div class="teams-setup">
+                <div class="team-setup team1">
+                    <h3>Team 1 (Blue)</h3>
+                    <div class="form-group">
+                        <label for="team1Name">Team Name</label>
+                        <input type="text" id="team1Name" class="input" placeholder="Enter team name" value="Team Alpha">
+                    </div>
+                    <div class="form-group">
+                        <label for="team1Player1">Player 1</label>
+                        <input type="text" id="team1Player1" class="input" placeholder="Player 1 name" value="Player 1">
+                    </div>
+                    <div class="form-group">
+                        <label for="team1Player2">Player 2</label>
+                        <input type="text" id="team1Player2" class="input" placeholder="Player 2 name" value="Player 2">
+                    </div>
+                </div>
+
+                <div class="vs-divider">VS</div>
+
+                <div class="team-setup team2">
+                    <h3>Team 2 (Red)</h3>
+                    <div class="form-group">
+                        <label for="team2Name">Team Name</label>
+                        <input type="text" id="team2Name" class="input" placeholder="Enter team name" value="Team Beta">
+                    </div>
+                    <div class="form-group">
+                        <label for="team2Player1">Player 1</label>
+                        <input type="text" id="team2Player1" class="input" placeholder="Player 1 name" value="Player 3">
+                    </div>
+                    <div class="form-group">
+                        <label for="team2Player2">Player 2</label>
+                        <input type="text" id="team2Player2" class="input" placeholder="Player 2 name" value="Player 4">
+                    </div>
+                </div>
+            </div>
+            <!-- Settings Section -->
+            <div class="settings-section">
+                <h3>Match Settings</h3>
+                <div class="settings-grid">
+                    <div class="form-group">
+                        <label for="setDuration">Set Duration (minutes)</label>
+                        <input type="number" id="setDuration" class="input" value="25" min="5" max="60">
+                    </div>
+                    <div class="form-group">
+                        <label for="breakDuration">Break Duration (seconds)</label>
+                        <input type="number" id="breakDuration" class="input" value="90" min="30" max="180">
+                    </div>
+                </div>
+            </div>
+
+            <div class="start-match-container">
+                <button class="btn btn-primary btn-xl" id="startMatchBtn">
+                    Start Match
+                </button>
+            </div>
+        </section>
+
+        <!-- Score Section (shown during match) -->
+        <section class="score-section" id="scoreSection">
+            <!-- Score Panels -->
+            <div class="score-panels">
+                <!-- Team 1 Panel -->
+                <div class="score-panel team1">
+                    <div class="team-name" id="team1DisplayName">Team Alpha</div>
+                    <div class="player-names" id="team1DisplayPlayers">Player 1 & Player 2</div>
+                    <div class="service-badge" id="team1Service">
+                        <span>SERVING</span>
+                        <span class="service-side" id="team1ServiceSide">(Right)</span>
+                    </div>
+                    <div class="current-score" id="team1Score">0</div>
+                    <div class="score-controls">
+                        <button class="btn btn-success btn-score" id="team1ScoreBtn">
+                            +1 Point
+                        </button>
+                        <button class="btn btn-danger btn-penalty" id="team1PenaltyBtn">
+                            -2 Penalty (Argument)
+                        </button>
+                        <button class="btn btn-warning btn-break" id="team1BreakBtn">
+                            Call Break (1:30)
+                        </button>
+                        <div class="break-info" id="team1BreakInfo">1 break available this set</div>
+                    </div>
+                </div>
+
+                <!-- Team 2 Panel -->
+                <div class="score-panel team2">
+                    <div class="team-name" id="team2DisplayName">Team Beta</div>
+                    <div class="player-names" id="team2DisplayPlayers">Player 3 & Player 4</div>
+                    <div class="service-badge" id="team2Service">
+                        <span>SERVING</span>
+                        <span class="service-side" id="team2ServiceSide">(Right)</span>
+                    </div>
+                    <div class="current-score" id="team2Score">0</div>
+                    <div class="score-controls">
+                        <button class="btn btn-success btn-score" id="team2ScoreBtn">
+                            +1 Point
+                        </button>
+                        <button class="btn btn-danger btn-penalty" id="team2PenaltyBtn">
+                            -2 Penalty (Argument)
+                        </button>
+                        <button class="btn btn-warning btn-break" id="team2BreakBtn">
+                            Call Break (1:30)
+                        </button>
+                        <div class="break-info" id="team2BreakInfo">1 break available this set</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Match Control -->
+            <div class="match-control">
+                <h3>Match Control</h3>
+                <div class="control-row">
+                    <div class="sets-display">
+                        <span class="label">Sets:</span>
+                        <div class="sets-score">
+                            <span class="team1-sets" id="team1SetsWon">0</span>
+                            <span>-</span>
+                            <span class="team2-sets" id="team2SetsWon">0</span>
+                        </div>
+                    </div>
+
+                    <div class="point-status set-point" id="setPointAlert">SET POINT</div>
+                    <div class="point-status match-point" id="matchPointAlert">MATCH POINT</div>
+
+                    <button class="btn btn-secondary" id="undoBtn">
+                        Undo Last Action
+                    </button>
+                    <button class="btn btn-primary hidden" id="nextSetBtn">
+                        Start Next Set
+                    </button>
+                    <button class="btn btn-danger" id="resetMatchBtn">
+                        Reset Match
+                    </button>
+                </div>
+            </div>
+
+            <!-- Action History -->
+            <div class="history-section">
+                <h3>Action History</h3>
+                <ul class="history-list" id="historyList">
+                    <li class="history-item">
+                        <span class="history-action">Match started</span>
+                        <span class="history-time">--:--</span>
+                    </li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Break Timer Overlay -->
+    <div class="break-overlay" id="breakOverlay">
+        <div class="break-content">
+            <div class="break-title">BREAK TIME</div>
+            <div class="break-team-label">Break requested by</div>
+            <div class="break-team" id="breakTeamName">Team Alpha</div>
+            <div class="break-timer-container">
+                <div class="break-timer-label">Time Remaining</div>
+                <div class="break-timer" id="breakTimer">1:30</div>
+            </div>
+            <div class="break-progress">
+                <div class="break-progress-bar" id="breakProgressBar" style="width: 100%"></div>
+            </div>
+            <button class="btn btn-outline btn-lg" id="endBreakBtn">
+                End Break Early
+            </button>
+        </div>
+    </div>
+
+    <!-- Set Won Overlay -->
+    <div class="set-won-overlay" id="setWonOverlay">
+        <div class="set-won-content">
+            <h2>SET <span id="setWonNumber">1</span> WON!</h2>
+            <div class="winner-name" id="setWinnerName">Team Alpha</div>
+            <div class="set-final-score" id="setFinalScore">21 - 15</div>
+            <div style="margin-top: var(--space-6);">
+                <button class="btn btn-primary btn-lg" id="continueMatchBtn">
+                    Continue to Next Set
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Match Over Overlay -->
+    <div class="match-over-overlay" id="matchOverOverlay">
+        <div class="match-over-content">
+            <h2>MATCH OVER!</h2>
+            <div class="winner-name" id="matchWinnerName">Team Alpha Wins!</div>
+            <div class="final-score" id="matchFinalScore">Sets: 2 - 1</div>
+            <div style="margin-top: var(--space-6);">
+                <button class="btn btn-primary btn-lg" id="newMatchBtn">
+                    Start New Match
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/gameState.js"></script>
+    <script src="js/badmintonRules.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,722 @@
+/**
+ * Smasher Badminton Club - Admin Panel Styles
+ */
+
+body {
+    background: linear-gradient(180deg, var(--gray-100) 0%, var(--gray-200) 100%);
+    min-height: 100vh;
+}
+
+/* Header */
+.admin-header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: var(--white);
+    padding: var(--space-4) var(--space-6);
+    box-shadow: var(--shadow-lg);
+    position: sticky;
+    top: 0;
+    z-index: var(--z-dropdown);
+}
+
+.header-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+}
+
+.back-btn {
+    color: var(--gray-400);
+    text-decoration: none;
+    font-size: var(--text-xl);
+    transition: color var(--transition-fast);
+}
+
+.back-btn:hover {
+    color: var(--accent-gold);
+}
+
+.header-title h1 {
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--accent-gold);
+}
+
+.header-title p {
+    font-size: var(--text-sm);
+    color: var(--gray-400);
+}
+
+.header-status {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+}
+
+.set-indicator {
+    background: var(--primary-light);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    font-size: var(--text-sm);
+}
+
+.set-timer {
+    background: var(--accent-gold);
+    color: var(--primary-dark);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-full);
+    font-weight: 700;
+    font-size: var(--text-sm);
+    font-family: var(--font-mono);
+    min-width: 70px;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+.set-timer.overtime {
+    background: var(--danger);
+    color: var(--white);
+    animation: pulse 1s infinite;
+}
+
+.match-status-badge {
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+}
+
+.match-status-badge.not-started {
+    background: var(--gray-600);
+}
+
+.match-status-badge.in-progress {
+    background: var(--success);
+}
+
+.match-status-badge.set-won {
+    background: var(--warning);
+    color: var(--primary-dark);
+}
+
+.match-status-badge.match-over {
+    background: var(--accent-gold);
+    color: var(--primary-dark);
+}
+
+/* Main Content */
+.admin-main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--space-6);
+}
+
+/* Setup Section */
+.setup-section {
+    background: var(--white);
+    border-radius: var(--radius-2xl);
+    padding: var(--space-8);
+    box-shadow: var(--shadow-lg);
+    margin-bottom: var(--space-6);
+}
+
+.setup-section h2 {
+    text-align: center;
+    margin-bottom: var(--space-6);
+    color: var(--primary);
+}
+
+.teams-setup {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: var(--space-6);
+    align-items: start;
+}
+
+.team-setup {
+    padding: var(--space-6);
+    border-radius: var(--radius-xl);
+    background: var(--gray-100);
+}
+
+.team-setup.team1 {
+    border: 3px solid var(--team1-color);
+}
+
+.team-setup.team2 {
+    border: 3px solid var(--team2-color);
+}
+
+.team-setup h3 {
+    text-align: center;
+    margin-bottom: var(--space-4);
+    font-size: var(--text-lg);
+}
+
+.team-setup.team1 h3 {
+    color: var(--team1-color);
+}
+
+.team-setup.team2 h3 {
+    color: var(--team2-color);
+}
+
+.form-group {
+    margin-bottom: var(--space-4);
+}
+
+.form-group label {
+    display: block;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--gray-700);
+    margin-bottom: var(--space-2);
+}
+
+.vs-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-3xl);
+    font-weight: 800;
+    color: var(--gray-400);
+}
+
+/* Settings Section */
+.settings-section {
+    margin-top: var(--space-6);
+    padding-top: var(--space-6);
+    border-top: 2px solid var(--gray-200);
+}
+
+.settings-section h3 {
+    font-size: var(--text-lg);
+    color: var(--gray-700);
+    margin-bottom: var(--space-4);
+    text-align: center;
+}
+
+.settings-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.settings-grid .form-group {
+    margin-bottom: 0;
+}
+
+.settings-grid .input {
+    text-align: center;
+    font-weight: 600;
+}
+
+.start-match-container {
+    text-align: center;
+    margin-top: var(--space-6);
+}
+
+/* Score Control Section */
+.score-section {
+    display: none;
+}
+
+.score-section.active {
+    display: block;
+}
+
+.score-panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6);
+    margin-bottom: var(--space-6);
+}
+
+.score-panel {
+    background: var(--white);
+    border-radius: var(--radius-2xl);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.score-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+}
+
+.score-panel.team1::before {
+    background: var(--team1-color);
+}
+
+.score-panel.team2::before {
+    background: var(--team2-color);
+}
+
+.team-name {
+    font-size: var(--text-xl);
+    font-weight: 700;
+    margin-bottom: var(--space-1);
+}
+
+.score-panel.team1 .team-name {
+    color: var(--team1-color);
+}
+
+.score-panel.team2 .team-name {
+    color: var(--team2-color);
+}
+
+.player-names {
+    font-size: var(--text-sm);
+    color: var(--gray-600);
+    margin-bottom: var(--space-4);
+}
+
+.current-score {
+    font-size: var(--text-8xl);
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: var(--space-4);
+    font-family: var(--font-display);
+    will-change: transform;
+    transform: translateZ(0);
+}
+
+.score-panel.team1 .current-score {
+    color: var(--team1-color);
+}
+
+.score-panel.team2 .current-score {
+    color: var(--team2-color);
+}
+
+.current-score.animate {
+    animation: scoreChange 0.25s ease-out;
+}
+
+.service-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    background: var(--accent-gold);
+    color: var(--primary-dark);
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    font-size: var(--text-sm);
+    margin-bottom: var(--space-4);
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+
+.service-badge.active {
+    opacity: 1;
+}
+
+.score-controls {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.btn-score {
+    padding: var(--space-4) var(--space-6);
+    font-size: var(--text-lg);
+    width: 100%;
+    will-change: transform;
+    transform: translateZ(0);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+}
+
+.btn-penalty {
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--text-sm);
+}
+
+.btn-break {
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--text-sm);
+}
+
+.btn-break:disabled {
+    background: var(--gray-400);
+}
+
+.break-info {
+    font-size: var(--text-xs);
+    color: var(--gray-500);
+    margin-top: var(--space-2);
+}
+
+/* Match Control Panel */
+.match-control {
+    background: var(--white);
+    border-radius: var(--radius-2xl);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-lg);
+    margin-bottom: var(--space-6);
+}
+
+.match-control h3 {
+    font-size: var(--text-lg);
+    color: var(--gray-700);
+    margin-bottom: var(--space-4);
+    padding-bottom: var(--space-2);
+    border-bottom: 2px solid var(--gray-200);
+}
+
+.control-row {
+    display: flex;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.sets-display {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4);
+    background: var(--gray-100);
+    border-radius: var(--radius-lg);
+}
+
+.sets-display .label {
+    font-weight: 600;
+    color: var(--gray-600);
+}
+
+.sets-score {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--text-2xl);
+    font-weight: 700;
+}
+
+.sets-score .team1-sets {
+    color: var(--team1-color);
+}
+
+.sets-score .team2-sets {
+    color: var(--team2-color);
+}
+
+/* Point Status Alerts */
+.point-status {
+    display: none;
+    padding: var(--space-3) var(--space-6);
+    border-radius: var(--radius-lg);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    animation: pulse 1s infinite;
+}
+
+.point-status.active {
+    display: inline-block;
+}
+
+.point-status.set-point {
+    background: var(--warning);
+    color: var(--primary-dark);
+}
+
+.point-status.match-point {
+    background: var(--danger);
+    color: var(--white);
+}
+
+/* Break Timer Overlay */
+.break-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.9);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: var(--z-overlay);
+}
+
+.break-overlay.active {
+    display: flex;
+}
+
+.break-content {
+    text-align: center;
+    color: var(--white);
+}
+
+.break-title {
+    font-size: var(--text-3xl);
+    font-weight: 600;
+    margin-bottom: var(--space-4);
+    color: var(--accent-gold);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.break-team-label {
+    font-size: var(--text-base);
+    color: var(--gray-500);
+    margin-bottom: var(--space-2);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.break-team {
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: var(--space-6);
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+.break-timer-container {
+    margin-bottom: var(--space-6);
+}
+
+.break-timer-label {
+    font-size: var(--text-sm);
+    color: var(--gray-500);
+    margin-bottom: var(--space-2);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.break-timer {
+    font-size: var(--text-8xl);
+    font-weight: 800;
+    font-family: var(--font-mono);
+    color: var(--white);
+    text-shadow: 0 0 30px var(--accent-gold);
+}
+
+.break-timer.warning {
+    color: var(--warning);
+}
+
+.break-timer.danger {
+    color: var(--danger);
+    animation: pulse 0.5s infinite;
+}
+
+.break-progress {
+    width: 300px;
+    height: 8px;
+    background: var(--gray-700);
+    border-radius: var(--radius-full);
+    margin: 0 auto var(--space-6);
+    overflow: hidden;
+}
+
+.break-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-gold), var(--warning));
+    border-radius: var(--radius-full);
+    transition: width 1s linear;
+}
+
+/* Set Won Overlay */
+.set-won-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.9);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: var(--z-overlay);
+}
+
+.set-won-overlay.active {
+    display: flex;
+}
+
+.set-won-content {
+    text-align: center;
+    color: var(--white);
+    animation: scaleUp 0.5s ease-out;
+}
+
+.set-won-content h2 {
+    font-size: var(--text-4xl);
+    color: var(--accent-gold);
+    margin-bottom: var(--space-4);
+}
+
+.set-won-content .winner-name {
+    font-size: var(--text-3xl);
+    color: var(--white);
+    margin-bottom: var(--space-8);
+}
+
+/* Match Over Overlay */
+.match-over-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.95);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: var(--z-overlay);
+}
+
+.match-over-overlay.active {
+    display: flex;
+}
+
+.match-over-content {
+    text-align: center;
+    color: var(--white);
+    animation: scaleUp 0.5s ease-out;
+}
+
+.match-over-content h2 {
+    font-size: var(--text-5xl);
+    color: var(--accent-gold);
+    margin-bottom: var(--space-4);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.match-over-content .winner-name {
+    font-size: var(--text-4xl);
+    color: var(--white);
+    margin-bottom: var(--space-2);
+}
+
+.match-over-content .final-score {
+    font-size: var(--text-2xl);
+    color: var(--gray-400);
+    margin-bottom: var(--space-8);
+}
+
+/* History Log */
+.history-section {
+    background: var(--white);
+    border-radius: var(--radius-2xl);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-lg);
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.history-section h3 {
+    font-size: var(--text-lg);
+    color: var(--gray-700);
+    margin-bottom: var(--space-4);
+    padding-bottom: var(--space-2);
+    border-bottom: 2px solid var(--gray-200);
+    position: sticky;
+    top: 0;
+    background: var(--white);
+}
+
+.history-list {
+    list-style: none;
+}
+
+.history-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--gray-100);
+    font-size: var(--text-sm);
+}
+
+.history-item:last-child {
+    border-bottom: none;
+}
+
+.history-action {
+    color: var(--gray-700);
+}
+
+.history-time {
+    color: var(--gray-500);
+    font-size: var(--text-xs);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .teams-setup {
+        grid-template-columns: 1fr;
+    }
+
+    .vs-divider {
+        padding: var(--space-2) 0;
+    }
+
+    .score-panels {
+        grid-template-columns: 1fr;
+    }
+
+    .current-score {
+        font-size: var(--text-6xl);
+    }
+
+    .header-content {
+        flex-direction: column;
+        gap: var(--space-4);
+    }
+
+    .header-status {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 600px) {
+    .admin-main {
+        padding: var(--space-4);
+    }
+
+    .setup-section,
+    .score-panel,
+    .match-control {
+        padding: var(--space-4);
+    }
+
+    .current-score {
+        font-size: var(--text-5xl);
+    }
+
+    .control-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .control-row .btn {
+        width: 100%;
+    }
+}

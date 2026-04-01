@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smasher Badminton Club - Scoreboard</title>
+    <link rel="stylesheet" href="css/common.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, var(--primary-light) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-4);
+        }
+
+        .landing-container {
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .logo-section {
+            margin-bottom: var(--space-12);
+        }
+
+        .shuttlecock-icon {
+            width: 100px;
+            height: 100px;
+            margin-bottom: var(--space-6);
+            animation: bounce 2s infinite;
+        }
+
+        .shuttlecock-icon svg {
+            width: 100%;
+            height: 100%;
+            fill: var(--accent-gold);
+        }
+
+        .club-name {
+            font-size: var(--text-5xl);
+            font-weight: 800;
+            color: var(--white);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: var(--space-2);
+            text-shadow: 0 4px 20px rgba(243, 156, 18, 0.3);
+        }
+
+        .club-name span {
+            color: var(--accent-gold);
+        }
+
+        .tagline {
+            font-size: var(--text-lg);
+            color: var(--gray-400);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+
+        .nav-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-6);
+            margin-top: var(--space-10);
+        }
+
+        .nav-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-2xl);
+            padding: var(--space-8);
+            text-decoration: none;
+            transition: all var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent 0%, rgba(243, 156, 18, 0.1) 100%);
+            opacity: 0;
+            transition: opacity var(--transition-normal);
+        }
+
+        .nav-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-gold);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(243, 156, 18, 0.2);
+        }
+
+        .nav-card:hover::before {
+            opacity: 1;
+        }
+
+        .nav-card-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto var(--space-4);
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-dark));
+            border-radius: var(--radius-xl);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-card-icon svg {
+            width: 32px;
+            height: 32px;
+            fill: var(--primary-dark);
+        }
+
+        .nav-card-title {
+            font-size: var(--text-xl);
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: var(--space-2);
+        }
+
+        .nav-card-desc {
+            font-size: var(--text-sm);
+            color: var(--gray-400);
+            line-height: 1.6;
+        }
+
+        .nav-card.admin .nav-card-icon {
+            background: linear-gradient(135deg, var(--team1-color), var(--team1-dark));
+        }
+
+        .nav-card.display .nav-card-icon {
+            background: linear-gradient(135deg, var(--success), var(--success-dark));
+        }
+
+        .footer-info {
+            margin-top: var(--space-12);
+            color: var(--gray-500);
+            font-size: var(--text-sm);
+        }
+
+        .footer-info p {
+            margin-bottom: var(--space-2);
+        }
+
+        .version {
+            color: var(--accent-gold);
+            font-weight: 600;
+        }
+
+        @media (max-width: 600px) {
+            .club-name {
+                font-size: var(--text-3xl);
+            }
+
+            .nav-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="landing-container">
+        <div class="logo-section">
+            <div class="shuttlecock-icon">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <ellipse cx="50" cy="80" rx="15" ry="18" fill="currentColor"/>
+                    <path d="M50 62 L30 10 L50 25 L70 10 Z" fill="currentColor"/>
+                    <path d="M35 60 L15 20 L35 35 Z" fill="currentColor" opacity="0.8"/>
+                    <path d="M65 60 L85 20 L65 35 Z" fill="currentColor" opacity="0.8"/>
+                    <path d="M42 58 L25 5 L42 28 Z" fill="currentColor" opacity="0.6"/>
+                    <path d="M58 58 L75 5 L58 28 Z" fill="currentColor" opacity="0.6"/>
+                </svg>
+            </div>
+            <h1 class="club-name"><span>Smasher</span> Badminton Club</h1>
+            <p class="tagline">Professional Scoreboard System</p>
+        </div>
+
+        <div class="nav-cards">
+            <a href="admin.html" class="nav-card admin">
+                <div class="nav-card-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9H15V22H13V16H11V22H9V9H3V7H21V9Z"/>
+                    </svg>
+                </div>
+                <h3 class="nav-card-title">Umpire Panel</h3>
+                <p class="nav-card-desc">Control scores, manage breaks, and officiate the match</p>
+            </a>
+
+            <a href="display.html" class="nav-card display">
+                <div class="nav-card-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M21 3H3C1.9 3 1 3.9 1 5V17C1 18.1 1.9 19 3 19H8V21H16V19H21C22.1 19 23 18.1 23 17V5C23 3.9 22.1 3 21 3ZM21 17H3V5H21V17Z"/>
+                    </svg>
+                </div>
+                <h3 class="nav-card-title">Live Display</h3>
+                <p class="nav-card-desc">Full-screen scoreboard for spectators with real-time updates</p>
+            </a>
+        </div>
+
+        <div class="footer-info">
+            <p>Open <strong>Umpire Panel</strong> in one tab and <strong>Live Display</strong> in another</p>
+            <p>Scores sync automatically in real-time</p>
+            <p class="version">v1.0.0</p>
+        </div>
+    </div>
+</body>
+</html>
