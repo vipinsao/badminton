@@ -408,16 +408,12 @@
 
         elements.setWonOverlayDisplay.classList.add('active');
 
-        // Auto-hide after 20 seconds and show "Set X Starts" message
+        // Auto-hide after 10 seconds
         if (setWonTimeout) clearTimeout(setWonTimeout);
         setWonTimeout = setTimeout(() => {
-            const currentState = GameState.getState();
-            // Only transition if match is not over and we haven't moved to next set yet
-            if (currentState.matchStatus !== 'match_over' && currentState.matchStatus === 'set_won') {
-                // Show "Set X Starts" message
-                showSetStartsMessage(nextSet);
-            }
-        }, 20000);
+            elements.setWonOverlayDisplay.classList.remove('active', 'transitioning');
+            setWonTimeout = null;
+        }, 10000);
     }
 
     // Show "Set X Starts" transition message
