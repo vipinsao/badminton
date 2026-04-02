@@ -532,6 +532,176 @@ body {
     animation: bounce 1s infinite;
 }
 
+/* Straight Win Enhanced Celebration */
+.match-won-overlay-display.straight-win {
+    background: linear-gradient(135deg, #1a0a2e 0%, #2d1b4e 50%, #1a0a2e 100%);
+    animation: straightWinBg 3s ease-in-out infinite;
+}
+
+.match-won-overlay-display.straight-win .trophy-icon {
+    animation: trophySpin 1s ease-in-out infinite;
+    text-shadow: 0 0 60px rgba(243, 156, 18, 0.8);
+}
+
+.match-won-overlay-display.straight-win .match-won-title {
+    animation: glow 1s infinite, pulse 0.5s infinite;
+}
+
+.match-won-overlay-display.straight-win .match-won-winner {
+    animation: winnerPulse 1s infinite;
+}
+
+@keyframes straightWinBg {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+@keyframes trophySpin {
+    0%, 100% { transform: scale(1) rotate(-5deg); }
+    25% { transform: scale(1.1) rotate(5deg); }
+    50% { transform: scale(1) rotate(-5deg); }
+    75% { transform: scale(1.1) rotate(5deg); }
+}
+
+@keyframes winnerPulse {
+    0%, 100% { transform: scale(1); text-shadow: 0 0 20px rgba(255, 255, 255, 0.3); }
+    50% { transform: scale(1.02); text-shadow: 0 0 40px rgba(255, 255, 255, 0.6); }
+}
+
+/* Confetti Container */
+.confetti-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10000;
+    overflow: hidden;
+}
+
+.confetti-particle {
+    position: absolute;
+    pointer-events: none;
+}
+
+@keyframes confettiFall {
+    0% {
+        opacity: 1;
+        transform: translateY(0) rotate(0deg) scale(1);
+    }
+    25% {
+        transform: translateY(25vh) rotate(180deg) translateX(50px) scale(0.9);
+    }
+    50% {
+        transform: translateY(50vh) rotate(360deg) translateX(-30px) scale(0.8);
+    }
+    75% {
+        transform: translateY(75vh) rotate(540deg) translateX(40px) scale(0.7);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(110vh) rotate(720deg) translateX(-20px) scale(0.5);
+    }
+}
+
+/* Set Won Transition Animation */
+.set-won-overlay-display.transitioning .set-won-content-display {
+    animation: setTransition 0.5s ease-out;
+}
+
+.set-won-overlay-display.transitioning .set-won-title {
+    color: var(--success);
+    animation: pulse 0.5s infinite;
+}
+
+.set-won-overlay-display.transitioning .set-won-winner {
+    font-size: var(--text-4xl);
+    color: var(--accent-gold);
+}
+
+@keyframes setTransition {
+    0% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Fireworks Container */
+.fireworks-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10001;
+    overflow: hidden;
+}
+
+.firework-burst {
+    position: absolute;
+    width: 0;
+    height: 0;
+}
+
+.firework-particle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color, #f39c12);
+    box-shadow: 0 0 10px var(--color, #f39c12), 0 0 20px var(--color, #f39c12);
+    animation: fireworkExplode 1.2s ease-out forwards;
+    transform: rotate(var(--angle)) translateX(0);
+}
+
+@keyframes fireworkExplode {
+    0% {
+        opacity: 1;
+        transform: rotate(var(--angle)) translateX(0) scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: rotate(var(--angle)) translateX(var(--distance)) scale(1.2);
+    }
+    100% {
+        opacity: 0;
+        transform: rotate(var(--angle)) translateX(calc(var(--distance) * 1.5)) scale(0);
+    }
+}
+
+/* Sparkle effect for straight win */
+.match-won-overlay-display.straight-win::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        radial-gradient(circle at 20% 30%, rgba(243, 156, 18, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(231, 76, 60, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 50% 80%, rgba(52, 152, 219, 0.3) 0%, transparent 50%);
+    animation: sparkleMove 4s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes sparkleMove {
+    0%, 100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 0.5;
+    }
+    50% {
+        transform: scale(1.1) rotate(5deg);
+        opacity: 0.8;
+    }
+}
+
 /* Waiting Screen */
 .waiting-screen {
     position: fixed;

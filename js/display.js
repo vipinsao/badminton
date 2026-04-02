@@ -66,6 +66,8 @@
     let setWonTimeout = null;
     let endsChangedTimeout = null;
     let setTimerInterval = null;
+    let confettiInterval = null;
+    let confettiParticles = [];
 
     // Format seconds to mm:ss
     function formatTime(seconds) {
@@ -242,19 +244,31 @@
 
         // Hide set won overlay when next set starts
         if (action === 'SET_START') {
-            elements.setWonOverlayDisplay.classList.remove('active');
+            // Clear any pending timeout
+            if (setWonTimeout) {
+                clearTimeout(setWonTimeout);
+                setWonTimeout = null;
+            }
+            elements.setWonOverlayDisplay.classList.remove('active', 'transitioning');
         }
 
         // Reset on match reset
         if (action === 'MATCH_RESET') {
-            elements.setWonOverlayDisplay.classList.remove('active');
-            elements.matchWonOverlayDisplay.classList.remove('active');
+            elements.setWonOverlayDisplay.classList.remove('active', 'transitioning');
+            elements.matchWonOverlayDisplay.classList.remove('active', 'straight-win');
             elements.breakOverlayDisplay.classList.remove('active');
             elements.pointStatusOverlay.classList.remove('active');
             prevScores = { team1: 0, team2: 0 };
             // Reset set timer display
             elements.displaySetTimer.textContent = '00:00';
             elements.displaySetTimer.classList.remove('overtime');
+            // Stop confetti
+            stopConfetti();
+            // Clear any pending timeouts
+            if (setWonTimeout) {
+                clearTimeout(setWonTimeout);
+                setWonTimeout = null;
+            }
             // Reset UI cache
             prevUIState = {
                 currentSet: null,
@@ -386,6 +400,7 @@
         const winner = state.setWinner;
         const currentSetIndex = state.currentSet - 1;
         const currentSet = state.sets[currentSetIndex];
+        const nextSet = state.currentSet + 1;
 
         elements.setWonTitleDisplay.textContent = `Set ${state.currentSet} Won!`;
         elements.setWonWinnerDisplay.textContent = state.teams[winner].name;
@@ -393,15 +408,31 @@
 
         elements.setWonOverlayDisplay.classList.add('active');
 
-        // Auto-hide after 5 seconds
+        // Auto-hide after 20 seconds and show "Set X Starts" message
         if (setWonTimeout) clearTimeout(setWonTimeout);
         setWonTimeout = setTimeout(() => {
-            // Only hide if match is not over and we're waiting for next set
             const currentState = GameState.getState();
-            if (currentState.matchStatus !== 'match_over') {
-                // Keep showing until next set starts
+            // Only transition if match is not over and we haven't moved to next set yet
+            if (currentState.matchStatus !== 'match_over' && currentState.matchStatus === 'set_won') {
+                // Show "Set X Starts" message
+                showSetStartsMessage(nextSet);
             }
-        }, 5000);
+        }, 20000);
+    }
+
+    // Show "Set X Starts" transition message
+    function showSetStartsMessage(setNumber) {
+        elements.setWonTitleDisplay.textContent = `Set ${setNumber}`;
+        elements.setWonWinnerDisplay.textContent = 'Starting Soon...';
+        elements.setWonScoreDisplay.textContent = 'Get Ready!';
+
+        // Add transition animation class
+        elements.setWonOverlayDisplay.classList.add('transitioning');
+
+        // Hide after 3 seconds
+        setTimeout(() => {
+            elements.setWonOverlayDisplay.classList.remove('active', 'transitioning');
+        }, 3000);
     }
 
     // Show match won overlay
@@ -413,6 +444,209 @@
 
         // Hide set won overlay
         elements.setWonOverlayDisplay.classList.remove('active');
+
+        // Check for straight win (2-0)
+        const isStraightWin = (state.setsWon.team1 === 2 && state.setsWon.team2 === 0) ||
+                              (state.setsWon.team2 === 2 && state.setsWon.team1 === 0);
+
+        if (isStraightWin) {
+            // Add straight win class for extra celebration
+            elements.matchWonOverlayDisplay.classList.add('straight-win');
+            startConfetti();
+            // Extra fireworks bursts for straight win
+            startFireworks();
+        } else {
+            startConfetti(); // Still show confetti for any match win
+            startFireworks(); // Also show fireworks for 3-set match win
+        }
+    }
+
+    // Fireworks burst effect
+    function startFireworks() {
+        let fireworksContainer = document.getElementById('fireworksContainer');
+        if (!fireworksContainer) {
+            fireworksContainer = document.createElement('div');
+            fireworksContainer.id = 'fireworksContainer';
+            fireworksContainer.className = 'fireworks-container';
+            document.body.appendChild(fireworksContainer);
+        }
+
+        // Create multiple bursts
+        const burstPositions = [
+            { x: 20, y: 30 }, { x: 80, y: 25 }, { x: 50, y: 20 },
+            { x: 30, y: 40 }, { x: 70, y: 35 }, { x: 15, y: 50 },
+            { x: 85, y: 45 }, { x: 40, y: 60 }, { x: 60, y: 55 }
+        ];
+
+        burstPositions.forEach((pos, index) => {
+            setTimeout(() => {
+                createFireworkBurst(fireworksContainer, pos.x, pos.y);
+            }, index * 400);
+        });
+
+        // Continue bursting
+        let burstCount = 0;
+        const burstInterval = setInterval(() => {
+            const randomX = Math.random() * 80 + 10;
+            const randomY = Math.random() * 40 + 10;
+            createFireworkBurst(fireworksContainer, randomX, randomY);
+            burstCount++;
+            if (burstCount > 20) {
+                clearInterval(burstInterval);
+            }
+        }, 600);
+
+        // Clean up after 12 seconds
+        setTimeout(() => {
+            if (fireworksContainer) {
+                fireworksContainer.innerHTML = '';
+            }
+        }, 12000);
+    }
+
+    function createFireworkBurst(container, x, y) {
+        const burst = document.createElement('div');
+        burst.className = 'firework-burst';
+        burst.style.left = `${x}%`;
+        burst.style.top = `${y}%`;
+
+        const colors = ['#f39c12', '#e74c3c', '#3498db', '#2ecc71', '#9b59b6', '#ff6b6b', '#ffd93d', '#ffffff'];
+        const particleCount = 20;
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'firework-particle';
+            const angle = (i / particleCount) * 360;
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            const distance = 80 + Math.random() * 60;
+
+            particle.style.cssText = `
+                --angle: ${angle}deg;
+                --distance: ${distance}px;
+                --color: ${color};
+            `;
+            burst.appendChild(particle);
+        }
+
+        container.appendChild(burst);
+
+        // Remove burst after animation
+        setTimeout(() => {
+            if (burst.parentNode) {
+                burst.parentNode.removeChild(burst);
+            }
+        }, 1500);
+    }
+
+    // Confetti celebration effect
+    function startConfetti() {
+        // Stop any existing confetti
+        stopConfetti();
+
+        // Create confetti container if it doesn't exist
+        let confettiContainer = document.getElementById('confettiContainer');
+        if (!confettiContainer) {
+            confettiContainer = document.createElement('div');
+            confettiContainer.id = 'confettiContainer';
+            confettiContainer.className = 'confetti-container';
+            document.body.appendChild(confettiContainer);
+        }
+        confettiContainer.innerHTML = '';
+
+        const colors = ['#f39c12', '#e74c3c', '#3498db', '#2ecc71', '#9b59b6', '#ffffff', '#ff6b6b', '#ffd93d'];
+        const shapes = ['square', 'circle', 'triangle'];
+        const particleCount = 150;
+
+        // Create particles
+        for (let i = 0; i < particleCount; i++) {
+            createConfettiParticle(confettiContainer, colors, shapes, i);
+        }
+
+        // Continue spawning particles
+        confettiInterval = setInterval(() => {
+            for (let i = 0; i < 10; i++) {
+                createConfettiParticle(confettiContainer, colors, shapes, Math.random() * 1000);
+            }
+        }, 500);
+
+        // Stop after 10 seconds
+        setTimeout(() => {
+            stopConfetti();
+        }, 10000);
+    }
+
+    function createConfettiParticle(container, colors, shapes, delay) {
+        const particle = document.createElement('div');
+        particle.className = 'confetti-particle';
+
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const shape = shapes[Math.floor(Math.random() * shapes.length)];
+        const size = Math.random() * 10 + 5;
+        const left = Math.random() * 100;
+        const animDuration = Math.random() * 3 + 2;
+        const animDelay = (delay % 100) / 100;
+
+        particle.style.cssText = `
+            position: absolute;
+            left: ${left}%;
+            top: -20px;
+            width: ${size}px;
+            height: ${size}px;
+            background-color: ${color};
+            animation: confettiFall ${animDuration}s ease-out ${animDelay}s forwards;
+            opacity: 0;
+        `;
+
+        if (shape === 'circle') {
+            particle.style.borderRadius = '50%';
+        } else if (shape === 'triangle') {
+            particle.style.width = '0';
+            particle.style.height = '0';
+            particle.style.backgroundColor = 'transparent';
+            particle.style.borderLeft = `${size/2}px solid transparent`;
+            particle.style.borderRight = `${size/2}px solid transparent`;
+            particle.style.borderBottom = `${size}px solid ${color}`;
+        }
+
+        container.appendChild(particle);
+        confettiParticles.push(particle);
+
+        // Remove particle after animation
+        setTimeout(() => {
+            if (particle.parentNode) {
+                particle.parentNode.removeChild(particle);
+            }
+            const index = confettiParticles.indexOf(particle);
+            if (index > -1) {
+                confettiParticles.splice(index, 1);
+            }
+        }, (animDuration + animDelay) * 1000 + 100);
+    }
+
+    function stopConfetti() {
+        if (confettiInterval) {
+            clearInterval(confettiInterval);
+            confettiInterval = null;
+        }
+        // Clean up particles
+        confettiParticles.forEach(particle => {
+            if (particle.parentNode) {
+                particle.parentNode.removeChild(particle);
+            }
+        });
+        confettiParticles = [];
+
+        // Also clean up confetti container
+        const confettiContainer = document.getElementById('confettiContainer');
+        if (confettiContainer) {
+            confettiContainer.innerHTML = '';
+        }
+
+        // Clean up fireworks container
+        const fireworksContainer = document.getElementById('fireworksContainer');
+        if (fireworksContainer) {
+            fireworksContainer.innerHTML = '';
+        }
     }
 
     // Show ends changed notification
