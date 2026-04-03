@@ -222,6 +222,55 @@ body {
     font-weight: 600;
 }
 
+/* First Serve Selection */
+.first-serve-group {
+    grid-column: 1 / -1;
+    margin-top: var(--space-2);
+}
+
+.first-serve-options {
+    display: flex;
+    gap: var(--space-4);
+    justify-content: center;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-6);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    border: 2px solid var(--gray-300);
+    background: var(--white);
+}
+
+.radio-option:hover {
+    border-color: var(--gray-400);
+}
+
+.radio-option input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.radio-option.team1-option:has(input:checked) {
+    border-color: var(--team1-color);
+    background: rgba(52, 152, 219, 0.1);
+}
+
+.radio-option.team2-option:has(input:checked) {
+    border-color: var(--team2-color);
+    background: rgba(231, 76, 60, 0.1);
+}
+
+.radio-label {
+    font-weight: 600;
+    color: var(--gray-700);
+}
+
 .start-match-container {
     text-align: center;
     margin-top: var(--space-6);

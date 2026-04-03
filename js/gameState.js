@@ -531,8 +531,8 @@ const GameState = (function() {
             }, 'TEAMS_SET');
         },
 
-        // Start match
-        startMatch() {
+        // Start match - firstServe parameter specifies which team serves first
+        startMatch(firstServe = 'team1') {
             const now = Date.now();
             const newSets = [...state.sets];
             newSets[0] = { ...newSets[0], startTime: now };
@@ -540,7 +540,7 @@ const GameState = (function() {
             updateState({
                 matchStatus: 'in_progress',
                 currentSet: 1,
-                serving: 'team1',
+                serving: firstServe,
                 servingSide: 'right',
                 sets: newSets,
                 setTimer: {

@@ -500,8 +500,12 @@
             breakDuration: breakDuration
         });
 
+        // Get first serve selection
+        const firstServeTeam1 = document.getElementById('firstServeTeam1');
+        const firstServe = firstServeTeam1 && firstServeTeam1.checked ? 'team1' : 'team2';
+
         GameState.setTeams(team1Name, team1Players, team2Name, team2Players);
-        GameState.startMatch();
+        GameState.startMatch(firstServe);
 
         // Start set timer
         startSetTimer();
