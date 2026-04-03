@@ -175,8 +175,64 @@
         // Setup event listeners
         setupEventListeners();
 
+        // Auto-connect to WebSocket server when running on a server
+        autoConnectWebSocket();
+
         // Update UI with current state
         updateUI(state);
+    }
+
+    // Auto-connect to WebSocket server when running on a server (not file://)
+    function autoConnectWebSocket() {
+        // Subscribe to connection status changes
+        if (typeof GameState !== 'undefined' && GameState.onConnectionStatusChange) {
+            GameState.onConnectionStatusChange(function(status) {
+                switch (status) {
+                    case 'connected':
+                        updateConnectionStatus('connected', 'Connected');
+                        break;
+                    case 'connecting':
+                        updateConnectionStatus('connecting', 'Connecting...');
+                        break;
+                    case 'disconnected':
+                        updateConnectionStatus('disconnected', 'Disconnected');
+                        break;
+                    default:
+                        updateConnectionStatus('local', 'Local Mode');
+                }
+            });
+        }
+
+        const protocol = window.location.protocol;
+        const host = window.location.host;
+
+        // Skip if running from file://
+        if (protocol === 'file:') {
+            console.log('Running locally from file, using BroadcastChannel only');
+            updateConnectionStatus('local', 'Local Mode');
+            return;
+        }
+
+        // Determine WebSocket URL
+        let wsUrl;
+        if (protocol === 'https:') {
+            wsUrl = `wss://${host}`;
+        } else {
+            wsUrl = `ws://${host}`;
+        }
+
+        console.log('Auto-connecting to WebSocket server:', wsUrl);
+        updateConnectionStatus('connecting', 'Connecting...');
+
+        // Pre-fill the server URL input
+        if (elements.serverUrl) {
+            elements.serverUrl.value = wsUrl;
+        }
+
+        // Connect to WebSocket for cross-device sync
+        if (typeof GameState !== 'undefined' && GameState.initWebSocket) {
+            GameState.initWebSocket(wsUrl);
+        }
     }
 
     // Setup event listeners

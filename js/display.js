@@ -107,6 +107,9 @@
         // Subscribe to state changes
         GameState.subscribe(onStateChange);
 
+        // Auto-connect to WebSocket server for cross-device sync
+        autoConnectWebSocket();
+
         // Request sync from admin panel
         GameState.requestSync();
 
@@ -115,6 +118,33 @@
 
         // Update UI with current state
         updateDisplay(state);
+    }
+
+    // Auto-connect to WebSocket server when running on a server (not file://)
+    function autoConnectWebSocket() {
+        const protocol = window.location.protocol;
+        const host = window.location.host;
+
+        // Skip if running from file:// or localhost without port 3000
+        if (protocol === 'file:') {
+            console.log('Running locally from file, using BroadcastChannel only');
+            return;
+        }
+
+        // Determine WebSocket URL
+        let wsUrl;
+        if (protocol === 'https:') {
+            wsUrl = `wss://${host}`;
+        } else {
+            wsUrl = `ws://${host}`;
+        }
+
+        console.log('Auto-connecting to WebSocket server:', wsUrl);
+
+        // Connect to WebSocket for cross-device sync
+        if (typeof GameState !== 'undefined' && GameState.initWebSocket) {
+            GameState.initWebSocket(wsUrl);
+        }
     }
 
     // Start set timer display interval
