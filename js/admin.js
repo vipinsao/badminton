@@ -241,6 +241,64 @@
                 }
             });
         }
+
+        // QR Code modal
+        const showQRBtn = document.getElementById('showQRBtn');
+        const qrModal = document.getElementById('qrModal');
+        const closeQRModal = document.getElementById('closeQRModal');
+
+        if (showQRBtn && qrModal) {
+            showQRBtn.addEventListener('click', () => {
+                generateQRCodes();
+                qrModal.classList.add('active');
+            });
+        }
+
+        if (closeQRModal && qrModal) {
+            closeQRModal.addEventListener('click', () => {
+                qrModal.classList.remove('active');
+            });
+
+            // Close on backdrop click
+            qrModal.addEventListener('click', (e) => {
+                if (e.target === qrModal) {
+                    qrModal.classList.remove('active');
+                }
+            });
+        }
+    }
+
+    // Generate QR codes for device connection
+    function generateQRCodes() {
+        const baseUrl = window.location.origin;
+        const adminUrl = baseUrl + '/admin.html';
+        const displayUrl = baseUrl + '/display.html';
+
+        const qrSize = 200;
+        const adminQRUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}x${qrSize}&data=${encodeURIComponent(adminUrl)}`;
+        const displayQRUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}x${qrSize}&data=${encodeURIComponent(displayUrl)}`;
+
+        const adminQRModal = document.getElementById('adminQRModal');
+        const displayQRModal = document.getElementById('displayQRModal');
+        const adminURLText = document.getElementById('adminURLText');
+        const displayURLText = document.getElementById('displayURLText');
+
+        if (adminQRModal && !adminQRModal.querySelector('img')) {
+            const adminImg = document.createElement('img');
+            adminImg.src = adminQRUrl;
+            adminImg.alt = 'Scan for Umpire Panel';
+            adminQRModal.appendChild(adminImg);
+        }
+
+        if (displayQRModal && !displayQRModal.querySelector('img')) {
+            const displayImg = document.createElement('img');
+            displayImg.src = displayQRUrl;
+            displayImg.alt = 'Scan for Live Display';
+            displayQRModal.appendChild(displayImg);
+        }
+
+        if (adminURLText) adminURLText.textContent = adminUrl;
+        if (displayURLText) displayURLText.textContent = displayUrl;
     }
 
     // State change handler

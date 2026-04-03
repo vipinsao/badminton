@@ -139,7 +139,7 @@
         }
 
         .footer-info {
-            margin-top: var(--space-12);
+            margin-top: var(--space-8);
             color: var(--gray-500);
             font-size: var(--text-sm);
         }
@@ -153,6 +153,72 @@
             font-weight: 600;
         }
 
+        /* QR Code Section */
+        .qr-section {
+            margin-top: var(--space-10);
+            padding-top: var(--space-8);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .qr-section-title {
+            font-size: var(--text-lg);
+            font-weight: 700;
+            color: var(--accent-gold);
+            margin-bottom: var(--space-2);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .qr-section-subtitle {
+            font-size: var(--text-sm);
+            color: var(--gray-400);
+            margin-bottom: var(--space-6);
+        }
+
+        .qr-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-6);
+        }
+
+        .qr-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: var(--radius-xl);
+            padding: var(--space-4);
+            text-align: center;
+        }
+
+        .qr-card-title {
+            font-size: var(--text-sm);
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: var(--space-2);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .qr-card.admin .qr-card-title {
+            color: var(--team1-color);
+        }
+
+        .qr-card.display .qr-card-title {
+            color: var(--success);
+        }
+
+        .qr-code {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto;
+            background: white;
+            padding: var(--space-2);
+            border-radius: var(--radius-md);
+        }
+
+        .qr-code img {
+            width: 100%;
+            height: 100%;
+        }
+
         @media (max-width: 600px) {
             .club-name {
                 font-size: var(--text-3xl);
@@ -160,6 +226,15 @@
 
             .nav-cards {
                 grid-template-columns: 1fr;
+            }
+
+            .qr-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .qr-code {
+                width: 150px;
+                height: 150px;
             }
         }
     </style>
@@ -203,11 +278,59 @@
             </a>
         </div>
 
+        <!-- QR Code Section -->
+        <div class="qr-section">
+            <h2 class="qr-section-title">Scan to Connect</h2>
+            <p class="qr-section-subtitle">Scan QR codes with your phone or tablet to open the pages</p>
+            <div class="qr-cards">
+                <div class="qr-card admin">
+                    <div class="qr-card-title">Umpire Panel</div>
+                    <div class="qr-code" id="adminQR"></div>
+                </div>
+                <div class="qr-card display">
+                    <div class="qr-card-title">Live Display</div>
+                    <div class="qr-code" id="displayQR"></div>
+                </div>
+            </div>
+        </div>
+
         <div class="footer-info">
             <p>Open <strong>Umpire Panel</strong> in one tab and <strong>Live Display</strong> in another</p>
             <p>Scores sync automatically in real-time</p>
             <p class="version">v1.0.0</p>
         </div>
     </div>
+
+    <script>
+        // Generate QR codes based on current URL
+        (function() {
+            const baseUrl = window.location.origin;
+            const adminUrl = baseUrl + '/admin.html';
+            const displayUrl = baseUrl + '/display.html';
+
+            // Use QR Server API to generate QR codes
+            const qrSize = 200;
+            const adminQRUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}x${qrSize}&data=${encodeURIComponent(adminUrl)}`;
+            const displayQRUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}x${qrSize}&data=${encodeURIComponent(displayUrl)}`;
+
+            // Create QR code images
+            const adminQR = document.getElementById('adminQR');
+            const displayQR = document.getElementById('displayQR');
+
+            if (adminQR) {
+                const adminImg = document.createElement('img');
+                adminImg.src = adminQRUrl;
+                adminImg.alt = 'Scan for Umpire Panel';
+                adminQR.appendChild(adminImg);
+            }
+
+            if (displayQR) {
+                const displayImg = document.createElement('img');
+                displayImg.src = displayQRUrl;
+                displayImg.alt = 'Scan for Live Display';
+                displayQR.appendChild(displayImg);
+            }
+        })();
+    </script>
 </body>
 </html>

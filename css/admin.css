@@ -974,3 +974,113 @@ body {
         width: 100%;
     }
 }
+
+/* QR Code Modal */
+.qr-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.9);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: calc(var(--z-overlay) + 20);
+}
+
+.qr-modal.active {
+    display: flex;
+}
+
+.qr-modal-content {
+    background: var(--white);
+    border-radius: var(--radius-2xl);
+    padding: var(--space-8);
+    max-width: 600px;
+    width: 90%;
+    text-align: center;
+    position: relative;
+}
+
+.qr-modal-close {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-4);
+    background: none;
+    border: none;
+    font-size: var(--text-3xl);
+    color: var(--gray-500);
+    cursor: pointer;
+    line-height: 1;
+}
+
+.qr-modal-close:hover {
+    color: var(--gray-800);
+}
+
+.qr-modal-content h2 {
+    font-size: var(--text-2xl);
+    color: var(--gray-800);
+    margin-bottom: var(--space-2);
+}
+
+.qr-modal-content p {
+    color: var(--gray-500);
+    margin-bottom: var(--space-6);
+}
+
+.qr-modal-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
+}
+
+.qr-modal-card {
+    background: var(--gray-100);
+    border-radius: var(--radius-xl);
+    padding: var(--space-4);
+}
+
+.qr-modal-card-title {
+    font-size: var(--text-lg);
+    font-weight: 700;
+    margin-bottom: var(--space-3);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.qr-modal-card-title.admin {
+    color: var(--team1-color);
+}
+
+.qr-modal-card-title.display {
+    color: var(--success);
+}
+
+.qr-modal-qr {
+    background: white;
+    padding: var(--space-3);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-3);
+}
+
+.qr-modal-qr img {
+    width: 150px;
+    height: 150px;
+}
+
+.qr-modal-url {
+    font-size: var(--text-xs);
+    color: var(--gray-500);
+    word-break: break-all;
+    padding: var(--space-2);
+    background: var(--white);
+    border-radius: var(--radius-md);
+}
+
+@media (max-width: 500px) {
+    .qr-modal-cards {
+        grid-template-columns: 1fr;
+    }
+}

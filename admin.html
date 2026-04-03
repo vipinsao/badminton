@@ -115,8 +115,32 @@
                 <button class="btn btn-primary btn-xl" id="startMatchBtn">
                     Start Match
                 </button>
+                <button class="btn btn-secondary" id="showQRBtn" style="margin-top: var(--space-4);">
+                    Show QR Codes for Devices
+                </button>
             </div>
         </section>
+
+    <!-- QR Code Modal -->
+    <div class="qr-modal" id="qrModal">
+        <div class="qr-modal-content">
+            <button class="qr-modal-close" id="closeQRModal">&times;</button>
+            <h2>Scan to Connect Devices</h2>
+            <p>Scan these QR codes with phones, tablets, or TV browsers</p>
+            <div class="qr-modal-cards">
+                <div class="qr-modal-card">
+                    <div class="qr-modal-card-title admin">Umpire Panel</div>
+                    <div class="qr-modal-qr" id="adminQRModal"></div>
+                    <div class="qr-modal-url" id="adminURLText"></div>
+                </div>
+                <div class="qr-modal-card">
+                    <div class="qr-modal-card-title display">Live Display</div>
+                    <div class="qr-modal-qr" id="displayQRModal"></div>
+                    <div class="qr-modal-url" id="displayURLText"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
         <!-- Score Section (shown during match) -->
         <section class="score-section" id="scoreSection">
