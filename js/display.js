@@ -220,10 +220,10 @@
         // Update break overlay
         updateBreakOverlay(state);
 
-        // Update sides swapped state (CSS-based swap)
+        // Update sides swapped state (CSS-based swap on container for all elements)
         if (prevUIState.sidesSwapped !== state.sidesSwapped) {
-            if (elements.scoreDisplay) {
-                elements.scoreDisplay.classList.toggle('sides-swapped', state.sidesSwapped);
+            if (elements.displayContainer) {
+                elements.displayContainer.classList.toggle('sides-swapped', state.sidesSwapped);
             }
             prevUIState.sidesSwapped = state.sidesSwapped;
         }
@@ -280,8 +280,8 @@
                 setWonTimeout = null;
             }
             // Reset sides swapped
-            if (elements.scoreDisplay) {
-                elements.scoreDisplay.classList.remove('sides-swapped');
+            if (elements.displayContainer) {
+                elements.displayContainer.classList.remove('sides-swapped');
             }
             // Reset UI cache
             prevUIState = {

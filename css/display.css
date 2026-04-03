@@ -124,16 +124,26 @@ body {
 }
 
 /* Sides swapped - swap team positions using flexbox order */
-.score-display.sides-swapped .team-section.team1 {
+#displayContainer.sides-swapped .team-section.team1 {
     order: 3;
 }
 
-.score-display.sides-swapped .vs-section {
+#displayContainer.sides-swapped .vs-section {
     order: 2;
 }
 
-.score-display.sides-swapped .team-section.team2 {
+#displayContainer.sides-swapped .team-section.team2 {
     order: 1;
+}
+
+/* Also swap the sets display numbers when sides are swapped */
+#displayContainer.sides-swapped .sets-numbers {
+    flex-direction: row-reverse;
+}
+
+/* Also swap the footer break indicators when sides are swapped */
+#displayContainer.sides-swapped .display-footer {
+    flex-direction: row-reverse;
 }
 
 /* Team Section */
