@@ -106,12 +106,6 @@
         matchFinalScore: document.getElementById('matchFinalScore'),
         newMatchBtn: document.getElementById('newMatchBtn'),
 
-        // Side Switch Modal
-        sideSwitchModal: document.getElementById('sideSwitchModal'),
-        sideSwitchReason: document.getElementById('sideSwitchReason'),
-        confirmSwitchBtn: document.getElementById('confirmSwitchBtn'),
-        declineSwitchBtn: document.getElementById('declineSwitchBtn'),
-
         // Network Connection
         connectionStatus: document.getElementById('connectionStatus'),
         connectionIndicator: document.getElementById('connectionIndicator'),
@@ -128,30 +122,6 @@
 
     // History entries
     const historyEntries = [];
-
-    // Side switch modal state
-    let sideSwitchPending = false;
-    let pendingSwitchReason = '';
-
-    // Show side switch confirmation modal
-    function showSideSwitchModal(reason) {
-        sideSwitchPending = true;
-        pendingSwitchReason = reason;
-        if (elements.sideSwitchReason) {
-            elements.sideSwitchReason.textContent = reason;
-        }
-        if (elements.sideSwitchModal) {
-            elements.sideSwitchModal.classList.add('active');
-        }
-    }
-
-    // Hide side switch modal
-    function hideSideSwitchModal() {
-        sideSwitchPending = false;
-        if (elements.sideSwitchModal) {
-            elements.sideSwitchModal.classList.remove('active');
-        }
-    }
 
     // Update connection status UI
     function updateConnectionStatus(status, text) {
@@ -257,22 +227,6 @@
             elements.matchOverOverlay.classList.remove('active');
             resetMatch();
         });
-
-        // Side switch modal buttons
-        if (elements.confirmSwitchBtn) {
-            elements.confirmSwitchBtn.addEventListener('click', () => {
-                GameState.swapDisplaySides();
-                hideSideSwitchModal();
-                addHistoryEntry('Sides switched (confirmed)');
-            });
-        }
-
-        if (elements.declineSwitchBtn) {
-            elements.declineSwitchBtn.addEventListener('click', () => {
-                hideSideSwitchModal();
-                addHistoryEntry('Side switch declined');
-            });
-        }
 
         // Network connection button
         if (elements.connectServerBtn) {
@@ -414,8 +368,8 @@
         // Show/hide next set button
         elements.nextSetBtn.classList.toggle('hidden', state.matchStatus !== 'set_won');
 
-        // Handle overlays
-        if (state.matchStatus === 'set_won' && !state.matchWinner) {
+        // Handle overlays - only show once (guard prevents repeated calls)
+        if (state.matchStatus === 'set_won' && !state.matchWinner && !elements.setWonOverlay.classList.contains('active')) {
             showSetWonOverlay(state);
         }
 
@@ -620,15 +574,7 @@
             );
         }
 
-        // Handle ends change in 3rd set - show confirmation modal
-        if (result.shouldChangeEnds) {
-            GameState.changeEnds(true);
-            addHistoryEntry('Ends changed at 11 points');
-            // Show side switch modal for user confirmation
-            setTimeout(() => {
-                showSideSwitchModal('11 points reached in deciding set - switch court sides (BWF Rule)');
-            }, 300);
-        }
+        // Note: Side switching is manual only - user clicks "Switch Sides" button when needed
 
         // End batch - applies all updates at once
         GameState.endBatch('POINT_SCORED');
@@ -949,11 +895,6 @@
         elements.switchSidesSetBtn.disabled = false;
 
         elements.setWonOverlay.classList.add('active');
-
-        // Auto-trigger side switch modal after a short delay
-        setTimeout(() => {
-            showSideSwitchModal('Teams should switch sides between sets (BWF Rule)');
-        }, 800);
     }
 
     // Show match over overlay

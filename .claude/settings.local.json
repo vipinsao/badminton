@@ -12,7 +12,15 @@
       "Bash(git branch:*)",
       "Bash(git push:*)",
       "Bash(curl:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(wc:*)",
+      "Bash(find:*)",
+      "Bash(cat:*)",
+      "Bash(grep:*)",
+      "Bash(npm install)",
+      "Bash(timeout 5 node:*)",
+      "Bash(node:*)"
     ]
   }
 }
