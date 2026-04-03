@@ -1,0 +1,21 @@
+{
+  "name": "smasher-scoreboard",
+  "version": "1.0.0",
+  "description": "Smasher Badminton Club Scoreboard - Real-time multi-device scoreboard with BWF rules",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "node server/server.js"
+  },
+  "keywords": [
+    "badminton",
+    "scoreboard",
+    "websocket",
+    "real-time"
+  ],
+  "author": "Smasher Badminton Club",
+  "license": "MIT",
+  "dependencies": {
+    "ws": "^8.16.0"
+  }
+}

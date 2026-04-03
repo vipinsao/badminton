@@ -62,6 +62,8 @@
         // Score Buttons
         team1ScoreBtn: document.getElementById('team1ScoreBtn'),
         team2ScoreBtn: document.getElementById('team2ScoreBtn'),
+        team1DecrementBtn: document.getElementById('team1DecrementBtn'),
+        team2DecrementBtn: document.getElementById('team2DecrementBtn'),
         team1PenaltyBtn: document.getElementById('team1PenaltyBtn'),
         team2PenaltyBtn: document.getElementById('team2PenaltyBtn'),
         team1BreakBtn: document.getElementById('team1BreakBtn'),
@@ -75,6 +77,7 @@
         setPointAlert: document.getElementById('setPointAlert'),
         matchPointAlert: document.getElementById('matchPointAlert'),
         undoBtn: document.getElementById('undoBtn'),
+        switchSidesBtn: document.getElementById('switchSidesBtn'),
         nextSetBtn: document.getElementById('nextSetBtn'),
         resetMatchBtn: document.getElementById('resetMatchBtn'),
 
@@ -93,13 +96,28 @@
         setWonNumber: document.getElementById('setWonNumber'),
         setWinnerName: document.getElementById('setWinnerName'),
         setFinalScore: document.getElementById('setFinalScore'),
+        switchSidesPrompt: document.getElementById('switchSidesPrompt'),
+        switchSidesSetBtn: document.getElementById('switchSidesSetBtn'),
         continueMatchBtn: document.getElementById('continueMatchBtn'),
 
         // Match Over Overlay
         matchOverOverlay: document.getElementById('matchOverOverlay'),
         matchWinnerName: document.getElementById('matchWinnerName'),
         matchFinalScore: document.getElementById('matchFinalScore'),
-        newMatchBtn: document.getElementById('newMatchBtn')
+        newMatchBtn: document.getElementById('newMatchBtn'),
+
+        // Side Switch Modal
+        sideSwitchModal: document.getElementById('sideSwitchModal'),
+        sideSwitchReason: document.getElementById('sideSwitchReason'),
+        confirmSwitchBtn: document.getElementById('confirmSwitchBtn'),
+        declineSwitchBtn: document.getElementById('declineSwitchBtn'),
+
+        // Network Connection
+        connectionStatus: document.getElementById('connectionStatus'),
+        connectionIndicator: document.getElementById('connectionIndicator'),
+        connectionText: document.getElementById('connectionText'),
+        serverUrl: document.getElementById('serverUrl'),
+        connectServerBtn: document.getElementById('connectServerBtn')
     };
 
     // Break timer interval
@@ -110,6 +128,59 @@
 
     // History entries
     const historyEntries = [];
+
+    // Side switch modal state
+    let sideSwitchPending = false;
+    let pendingSwitchReason = '';
+
+    // Show side switch confirmation modal
+    function showSideSwitchModal(reason) {
+        sideSwitchPending = true;
+        pendingSwitchReason = reason;
+        if (elements.sideSwitchReason) {
+            elements.sideSwitchReason.textContent = reason;
+        }
+        if (elements.sideSwitchModal) {
+            elements.sideSwitchModal.classList.add('active');
+        }
+    }
+
+    // Hide side switch modal
+    function hideSideSwitchModal() {
+        sideSwitchPending = false;
+        if (elements.sideSwitchModal) {
+            elements.sideSwitchModal.classList.remove('active');
+        }
+    }
+
+    // Update connection status UI
+    function updateConnectionStatus(status, text) {
+        if (elements.connectionIndicator) {
+            elements.connectionIndicator.className = 'connection-indicator ' + status;
+        }
+        if (elements.connectionText) {
+            elements.connectionText.textContent = text;
+        }
+    }
+
+    // Try to connect to WebSocket server
+    function connectToServer() {
+        const url = elements.serverUrl ? elements.serverUrl.value.trim() : '';
+        if (!url) {
+            updateConnectionStatus('local', 'Local Mode');
+            return;
+        }
+
+        updateConnectionStatus('connecting', 'Connecting...');
+
+        if (typeof GameState !== 'undefined' && GameState.initWebSocket) {
+            GameState.initWebSocket(url);
+        } else {
+            // WebSocket not yet implemented in gameState
+            updateConnectionStatus('local', 'Local Mode');
+            console.log('WebSocket support not yet available');
+        }
+    }
 
     // Format seconds to mm:ss
     function formatTime(seconds) {
@@ -147,6 +218,10 @@
         elements.team1ScoreBtn.addEventListener('click', () => addPoint('team1'));
         elements.team2ScoreBtn.addEventListener('click', () => addPoint('team2'));
 
+        // Decrement buttons (-1 point for corrections)
+        elements.team1DecrementBtn.addEventListener('click', () => decrementPoint('team1'));
+        elements.team2DecrementBtn.addEventListener('click', () => decrementPoint('team2'));
+
         // Penalty buttons
         elements.team1PenaltyBtn.addEventListener('click', () => deductPenalty('team1'));
         elements.team2PenaltyBtn.addEventListener('click', () => deductPenalty('team2'));
@@ -160,11 +235,20 @@
 
         // Match control
         elements.undoBtn.addEventListener('click', undoAction);
+        elements.switchSidesBtn.addEventListener('click', switchSides);
         elements.nextSetBtn.addEventListener('click', () => {
             elements.setWonOverlay.classList.remove('active');
             startNextSet();
         });
         elements.resetMatchBtn.addEventListener('click', confirmResetMatch);
+
+        // Switch sides in set won overlay
+        elements.switchSidesSetBtn.addEventListener('click', () => {
+            switchSides();
+            elements.switchSidesPrompt.classList.add('switched');
+            elements.switchSidesSetBtn.textContent = 'Sides Switched!';
+            elements.switchSidesSetBtn.disabled = true;
+        });
         elements.continueMatchBtn.addEventListener('click', () => {
             elements.setWonOverlay.classList.remove('active');
             startNextSet();
@@ -173,6 +257,36 @@
             elements.matchOverOverlay.classList.remove('active');
             resetMatch();
         });
+
+        // Side switch modal buttons
+        if (elements.confirmSwitchBtn) {
+            elements.confirmSwitchBtn.addEventListener('click', () => {
+                GameState.swapDisplaySides();
+                hideSideSwitchModal();
+                addHistoryEntry('Sides switched (confirmed)');
+            });
+        }
+
+        if (elements.declineSwitchBtn) {
+            elements.declineSwitchBtn.addEventListener('click', () => {
+                hideSideSwitchModal();
+                addHistoryEntry('Side switch declined');
+            });
+        }
+
+        // Network connection button
+        if (elements.connectServerBtn) {
+            elements.connectServerBtn.addEventListener('click', connectToServer);
+        }
+
+        // Server URL enter key
+        if (elements.serverUrl) {
+            elements.serverUrl.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    connectToServer();
+                }
+            });
+        }
     }
 
     // State change handler
@@ -313,6 +427,8 @@
         const controlsDisabled = state.breakActive.active || state.matchStatus === 'match_over';
         elements.team1ScoreBtn.disabled = controlsDisabled;
         elements.team2ScoreBtn.disabled = controlsDisabled;
+        elements.team1DecrementBtn.disabled = controlsDisabled;
+        elements.team2DecrementBtn.disabled = controlsDisabled;
         elements.team1PenaltyBtn.disabled = controlsDisabled;
         elements.team2PenaltyBtn.disabled = controlsDisabled;
     }
@@ -504,10 +620,14 @@
             );
         }
 
-        // Handle ends change in 3rd set
+        // Handle ends change in 3rd set - show confirmation modal
         if (result.shouldChangeEnds) {
             GameState.changeEnds(true);
             addHistoryEntry('Ends changed at 11 points');
+            // Show side switch modal for user confirmation
+            setTimeout(() => {
+                showSideSwitchModal('11 points reached in deciding set - switch court sides (BWF Rule)');
+            }, 300);
         }
 
         // End batch - applies all updates at once
@@ -542,6 +662,47 @@
 
         const teamName = state.teams[team].name;
         addHistoryEntry(`Penalty: ${teamName} -2 points (argument)`);
+    }
+
+    // Decrement point - for score corrections
+    function decrementPoint(team) {
+        if (!canProcessClick()) return;
+
+        const state = GameState.getState();
+        if (state.matchStatus !== 'in_progress') return;
+
+        const currentSetIndex = state.currentSet - 1;
+        const currentSet = state.sets[currentSetIndex];
+        const scoreKey = team + 'Score';
+
+        // Don't decrement below 0
+        if (currentSet[scoreKey] <= 0) return;
+
+        // Process decrement with rules engine
+        const result = BadmintonRules.processDecrement(state, team);
+
+        // Use batch update
+        GameState.startBatch();
+        GameState.decrementPoint(team);
+
+        // Update serving side based on new score
+        GameState.setServing(state.serving, result.newServingSide);
+
+        // Update point status
+        GameState.setPointStatus(
+            result.isMatchPoint,
+            result.matchPointTeam,
+            result.isSetPoint,
+            result.setPointTeam
+        );
+
+        GameState.endBatch('POINT_DECREMENTED');
+
+        // Add to history
+        const teamName = state.teams[team].name;
+        const newState = GameState.getState();
+        const newSet = newState.sets[newState.currentSet - 1];
+        addHistoryEntry(`${teamName} -1 (correction) (${newSet.team1Score}-${newSet.team2Score})`);
     }
 
     // Start break
@@ -640,6 +801,14 @@
 
             addHistoryEntry('Action undone');
         }
+    }
+
+    // Switch sides (swap team positions on display)
+    function switchSides() {
+        GameState.swapDisplaySides();
+        const state = GameState.getState();
+        const statusText = state.sidesSwapped ? 'Sides swapped' : 'Sides restored';
+        addHistoryEntry(statusText);
     }
 
     // Start break timer with specific time
@@ -774,7 +943,17 @@
             return;
         }
 
+        // Reset switch sides prompt
+        elements.switchSidesPrompt.classList.remove('switched');
+        elements.switchSidesSetBtn.textContent = 'Switch Sides';
+        elements.switchSidesSetBtn.disabled = false;
+
         elements.setWonOverlay.classList.add('active');
+
+        // Auto-trigger side switch modal after a short delay
+        setTimeout(() => {
+            showSideSwitchModal('Teams should switch sides between sets (BWF Rule)');
+        }, 800);
     }
 
     // Show match over overlay

@@ -362,6 +362,22 @@ body {
     background: var(--gray-400);
 }
 
+.btn-decrement {
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--text-sm);
+    background: linear-gradient(135deg, var(--gray-500), var(--gray-600));
+    color: var(--white);
+}
+
+.btn-decrement:hover:not(:disabled) {
+    background: linear-gradient(135deg, var(--gray-400), var(--gray-500));
+}
+
+.btn-decrement:disabled {
+    background: var(--gray-300);
+    color: var(--gray-500);
+}
+
 .break-info {
     font-size: var(--text-xs);
     color: var(--gray-500);
@@ -573,7 +589,31 @@ body {
 .set-won-content .winner-name {
     font-size: var(--text-3xl);
     color: var(--white);
-    margin-bottom: var(--space-8);
+    margin-bottom: var(--space-4);
+}
+
+/* Switch Sides Prompt in Set Won Overlay */
+.switch-sides-prompt {
+    margin: var(--space-4) 0;
+    padding: var(--space-4);
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-lg);
+    border: 2px dashed var(--warning);
+}
+
+.switch-sides-prompt p {
+    margin-bottom: var(--space-3);
+    color: var(--gray-300);
+    font-size: var(--text-sm);
+}
+
+.switch-sides-prompt.switched {
+    border-color: var(--success);
+    background: rgba(46, 204, 113, 0.2);
+}
+
+.switch-sides-prompt.switched p {
+    color: var(--success);
 }
 
 /* Match Over Overlay */
@@ -667,6 +707,145 @@ body {
     font-size: var(--text-xs);
 }
 
+/* Connection Status Indicator */
+.connection-status {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-full);
+    font-size: var(--text-xs);
+    font-weight: 600;
+}
+
+.connection-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+}
+
+.connection-indicator.local {
+    background: var(--warning);
+}
+
+.connection-indicator.connected {
+    background: var(--success);
+    box-shadow: 0 0 8px var(--success);
+}
+
+.connection-indicator.disconnected {
+    background: var(--danger);
+    animation: pulse 1s infinite;
+}
+
+.connection-indicator.connecting {
+    background: var(--info);
+    animation: pulse 0.5s infinite;
+}
+
+/* Network Settings Section */
+.network-settings {
+    margin-top: var(--space-6);
+    padding-top: var(--space-6);
+    border-top: 2px solid var(--gray-200);
+}
+
+.network-settings h3 {
+    font-size: var(--text-lg);
+    color: var(--gray-700);
+    margin-bottom: var(--space-2);
+    text-align: center;
+}
+
+.network-description {
+    text-align: center;
+    color: var(--gray-500);
+    font-size: var(--text-sm);
+    margin-bottom: var(--space-4);
+}
+
+.network-input-group {
+    display: flex;
+    gap: var(--space-4);
+    align-items: flex-end;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.network-input-group .form-group {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+.input-hint {
+    display: block;
+    font-size: var(--text-xs);
+    color: var(--gray-500);
+    margin-top: var(--space-1);
+}
+
+/* Side Switch Confirmation Modal */
+.side-switch-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.9);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: calc(var(--z-overlay) + 10);
+}
+
+.side-switch-modal.active {
+    display: flex;
+}
+
+.side-switch-content {
+    text-align: center;
+    color: var(--white);
+    padding: var(--space-8);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    border-radius: var(--radius-2xl);
+    border: 3px solid var(--warning);
+    max-width: 500px;
+    animation: scaleUp 0.3s ease-out;
+}
+
+.side-switch-icon {
+    font-size: var(--text-6xl);
+    color: var(--warning);
+    margin-bottom: var(--space-4);
+}
+
+.side-switch-content h2 {
+    color: var(--warning);
+    margin-bottom: var(--space-4);
+    font-size: var(--text-3xl);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.side-switch-content p {
+    color: var(--gray-400);
+    margin-bottom: var(--space-6);
+    font-size: var(--text-base);
+}
+
+.side-switch-buttons {
+    display: flex;
+    gap: var(--space-4);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.side-switch-buttons .btn {
+    min-width: 180px;
+}
+
 /* Responsive */
 @media (max-width: 900px) {
     .teams-setup {
@@ -717,6 +896,32 @@ body {
     }
 
     .control-row .btn {
+        width: 100%;
+    }
+
+    .network-input-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .network-input-group .btn {
+        width: 100%;
+    }
+
+    .side-switch-content {
+        margin: var(--space-4);
+        padding: var(--space-6);
+    }
+
+    .side-switch-content h2 {
+        font-size: var(--text-2xl);
+    }
+
+    .side-switch-buttons {
+        flex-direction: column;
+    }
+
+    .side-switch-buttons .btn {
         width: 100%;
     }
 }

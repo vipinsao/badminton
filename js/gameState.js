@@ -16,6 +16,138 @@ const GameState = (function() {
         useLocalStorageFallback = true;
     }
 
+    // WebSocket connection for multi-device sync
+    let wsConnection = null;
+    let wsReconnectAttempts = 0;
+    const WS_MAX_RECONNECT = 5;
+    const WS_RECONNECT_DELAY = 2000;
+    let connectionMode = 'local'; // 'local' | 'connecting' | 'connected' | 'disconnected'
+    let connectionStatusCallbacks = [];
+
+    // Notify connection status change
+    function notifyConnectionStatus(status) {
+        connectionMode = status;
+        for (let i = 0; i < connectionStatusCallbacks.length; i++) {
+            try {
+                connectionStatusCallbacks[i](status);
+            } catch (e) {
+                console.error('Connection status callback error:', e);
+            }
+        }
+    }
+
+    // Initialize WebSocket connection
+    function initWebSocket(serverUrl) {
+        if (wsConnection && wsConnection.readyState === WebSocket.OPEN) {
+            wsConnection.close();
+        }
+
+        notifyConnectionStatus('connecting');
+
+        try {
+            wsConnection = new WebSocket(serverUrl);
+
+            wsConnection.onopen = () => {
+                console.log('WebSocket connected to', serverUrl);
+                wsReconnectAttempts = 0;
+                notifyConnectionStatus('connected');
+
+                // Request current state from server
+                wsConnection.send(JSON.stringify({ type: 'SYNC_REQUEST' }));
+            };
+
+            wsConnection.onmessage = (event) => {
+                try {
+                    const message = JSON.parse(event.data);
+                    handleWebSocketMessage(message);
+                } catch (e) {
+                    console.error('Failed to parse WebSocket message:', e);
+                }
+            };
+
+            wsConnection.onclose = () => {
+                console.log('WebSocket disconnected');
+                notifyConnectionStatus('disconnected');
+                attemptReconnect(serverUrl);
+            };
+
+            wsConnection.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                notifyConnectionStatus('disconnected');
+            };
+        } catch (e) {
+            console.error('Failed to create WebSocket connection:', e);
+            notifyConnectionStatus('local');
+        }
+    }
+
+    // Handle incoming WebSocket messages
+    function handleWebSocketMessage(message) {
+        switch (message.type) {
+            case 'STATE_SYNC':
+            case 'STATE_BROADCAST':
+                if (message.state) {
+                    // Update local state with server state
+                    Object.assign(state, message.state);
+                    saveToStorage();
+                    notifyListeners(message.action || 'STATE_SYNC');
+                    // Also broadcast to local tabs
+                    if (channel) {
+                        channel.postMessage({
+                            type: message.action || 'STATE_SYNC',
+                            state: cloneStateShallow(state),
+                            timestamp: Date.now()
+                        });
+                    }
+                }
+                break;
+
+            case 'CONNECTION_INFO':
+                console.log('Connected to server. Client count:', message.clientCount);
+                break;
+
+            case 'CLIENT_CONNECTED':
+            case 'CLIENT_DISCONNECTED':
+                console.log('Client count:', message.clientCount);
+                break;
+
+            case 'PONG':
+                // Heartbeat response
+                break;
+        }
+    }
+
+    // Attempt to reconnect with exponential backoff
+    function attemptReconnect(serverUrl) {
+        if (wsReconnectAttempts >= WS_MAX_RECONNECT) {
+            console.log('Max reconnection attempts reached, switching to local mode');
+            notifyConnectionStatus('local');
+            return;
+        }
+
+        wsReconnectAttempts++;
+        const delay = WS_RECONNECT_DELAY * Math.pow(2, wsReconnectAttempts - 1);
+        console.log(`Reconnecting in ${delay}ms (attempt ${wsReconnectAttempts}/${WS_MAX_RECONNECT})`);
+
+        setTimeout(() => {
+            if (connectionMode === 'disconnected') {
+                initWebSocket(serverUrl);
+            }
+        }, delay);
+    }
+
+    // Send state update via WebSocket
+    function sendWebSocketUpdate(action) {
+        if (wsConnection && wsConnection.readyState === WebSocket.OPEN) {
+            wsConnection.send(JSON.stringify({
+                type: 'STATE_UPDATE',
+                state: cloneStateShallow(state),
+                action: action,
+                timestamp: Date.now()
+            }));
+        }
+    }
+
     // LocalStorage fallback for browsers without BroadcastChannel
     const STORAGE_EVENT_KEY = 'smasher_scoreboard_sync';
     if (useLocalStorageFallback) {
@@ -92,6 +224,7 @@ const GameState = (function() {
         serving: 'team1',
         servingSide: 'right', // right or left court
         courtSide: { team1: 'left', team2: 'right' },
+        sidesSwapped: false, // Track if visual sides are swapped on display
         matchStatus: 'not_started', // not_started, in_progress, set_won, match_over
         matchWinner: null,
         setWinner: null,
@@ -202,7 +335,7 @@ const GameState = (function() {
         return false;
     }
 
-    // Throttled broadcast state to other tabs
+    // Throttled broadcast state to other tabs and WebSocket
     let lastBroadcastAction = 'STATE_UPDATE';
     function broadcastState(action = 'STATE_UPDATE') {
         lastBroadcastAction = action;
@@ -214,6 +347,7 @@ const GameState = (function() {
                 state: cloneStateShallow(state),
                 timestamp: Date.now()
             };
+            // Broadcast to local tabs
             if (channel) {
                 channel.postMessage(message);
             } else if (useLocalStorageFallback) {
@@ -221,6 +355,8 @@ const GameState = (function() {
                     localStorage.setItem(STORAGE_EVENT_KEY, JSON.stringify(message));
                 } catch (e) { /* ignore */ }
             }
+            // Send to WebSocket server for multi-device sync
+            sendWebSocketUpdate(lastBroadcastAction);
         }, BROADCAST_DELAY);
     }
 
@@ -451,6 +587,24 @@ const GameState = (function() {
             }, 'PENALTY_DEDUCTED');
         },
 
+        // Decrement point by 1 (for corrections)
+        decrementPoint(team) {
+            const currentSetIndex = state.currentSet - 1;
+            const scoreKey = team + 'Score';
+            const currentScore = state.sets[currentSetIndex][scoreKey];
+            const newScore = Math.max(0, currentScore - 1);
+
+            const newSets = [...state.sets];
+            newSets[currentSetIndex] = {
+                ...newSets[currentSetIndex],
+                [scoreKey]: newScore
+            };
+
+            updateState({
+                sets: newSets
+            }, 'POINT_DECREMENTED');
+        },
+
         // Update serving team
         setServing(team, side) {
             updateState({
@@ -603,6 +757,20 @@ const GameState = (function() {
             }, 'ENDS_CLEARED', false);
         },
 
+        // Swap visual display sides (Team 1 <-> Team 2 positions)
+        swapDisplaySides() {
+            updateState({
+                sidesSwapped: !state.sidesSwapped
+            }, 'SIDES_SWAPPED');
+        },
+
+        // Reset display sides to original
+        resetDisplaySides() {
+            updateState({
+                sidesSwapped: false
+            }, 'SIDES_RESET');
+        },
+
         // Undo last action
         undo() {
             if (state.history.length === 0) return false;
@@ -664,15 +832,51 @@ const GameState = (function() {
 
         // Request sync (for display panel on load)
         requestSync() {
-            channel.postMessage({
-                type: 'SYNC_REQUEST',
-                timestamp: Date.now()
-            });
+            // Request from local tabs
+            if (channel) {
+                channel.postMessage({
+                    type: 'SYNC_REQUEST',
+                    timestamp: Date.now()
+                });
+            }
+            // Also request from WebSocket server
+            if (wsConnection && wsConnection.readyState === WebSocket.OPEN) {
+                wsConnection.send(JSON.stringify({ type: 'SYNC_REQUEST' }));
+            }
         },
 
         // Force broadcast current state
         forceBroadcast() {
             broadcastState('STATE_UPDATE');
+        },
+
+        // Initialize WebSocket connection to server
+        initWebSocket(serverUrl) {
+            initWebSocket(serverUrl);
+        },
+
+        // Disconnect WebSocket
+        disconnectWebSocket() {
+            if (wsConnection) {
+                wsConnection.close();
+                wsConnection = null;
+            }
+            notifyConnectionStatus('local');
+        },
+
+        // Get current connection status
+        getConnectionStatus() {
+            return connectionMode;
+        },
+
+        // Subscribe to connection status changes
+        onConnectionStatusChange(callback) {
+            connectionStatusCallbacks.push(callback);
+            // Return unsubscribe function
+            return () => {
+                const index = connectionStatusCallbacks.indexOf(callback);
+                if (index > -1) connectionStatusCallbacks.splice(index, 1);
+            };
         }
     };
 })();

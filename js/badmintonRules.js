@@ -244,6 +244,44 @@ const BadmintonRules = (function() {
         getGameStatus,
 
         /**
+         * Process a point decrement and recalculate serving side
+         * Used for score corrections
+         */
+        processDecrement(state, team) {
+            const currentSetIndex = state.currentSet - 1;
+            const currentSet = state.sets[currentSetIndex];
+
+            const newScores = {
+                team1Score: Math.max(0, currentSet.team1Score - (team === 'team1' ? 1 : 0)),
+                team2Score: Math.max(0, currentSet.team2Score - (team === 'team2' ? 1 : 0))
+            };
+
+            // Recalculate serving side based on current server's new score
+            const currentServer = state.serving;
+            const serverScore = currentServer === 'team1' ? newScores.team1Score : newScores.team2Score;
+
+            return {
+                newScores,
+                newServingSide: getServingSide(serverScore),
+                // Re-check set/match point status
+                isSetPoint: checkSetPoint(newScores.team1Score, newScores.team2Score) !== null,
+                setPointTeam: checkSetPoint(newScores.team1Score, newScores.team2Score),
+                isMatchPoint: checkMatchPoint(
+                    newScores.team1Score,
+                    newScores.team2Score,
+                    state.setsWon.team1,
+                    state.setsWon.team2
+                ) !== null,
+                matchPointTeam: checkMatchPoint(
+                    newScores.team1Score,
+                    newScores.team2Score,
+                    state.setsWon.team1,
+                    state.setsWon.team2
+                )
+            };
+        },
+
+        /**
          * Process a point scored and return all updates needed
          */
         processPoint(state, scoringTeam) {

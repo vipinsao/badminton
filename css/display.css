@@ -105,13 +105,35 @@ body {
 }
 
 .score-display {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    display: flex;
     gap: var(--space-8);
     align-items: center;
     max-width: 1600px;
     margin: 0 auto;
     width: 100%;
+    justify-content: center;
+}
+
+.score-display .team-section {
+    flex: 1;
+    max-width: 45%;
+}
+
+.score-display .vs-section {
+    flex-shrink: 0;
+}
+
+/* Sides swapped - swap team positions using flexbox order */
+.score-display.sides-swapped .team-section.team1 {
+    order: 3;
+}
+
+.score-display.sides-swapped .vs-section {
+    order: 2;
+}
+
+.score-display.sides-swapped .team-section.team2 {
+    order: 1;
 }
 
 /* Team Section */
@@ -150,11 +172,12 @@ body {
 }
 
 .team-name-display {
-    font-size: var(--text-4xl);
+    font-size: var(--text-5xl);
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: var(--space-2);
+    letter-spacing: 0.08em;
+    margin-bottom: var(--space-1);
+    line-height: 1.1;
 }
 
 .team-section.team1 .team-name-display {
@@ -166,9 +189,11 @@ body {
 }
 
 .players-display {
-    font-size: var(--text-lg);
-    color: var(--gray-400);
+    font-size: var(--text-base);
+    color: var(--gray-500);
     margin-bottom: var(--space-6);
+    font-weight: 400;
+    letter-spacing: 0.02em;
 }
 
 .score-number {
@@ -807,7 +832,11 @@ body {
     }
 
     .team-name-display {
-        font-size: var(--text-2xl);
+        font-size: var(--text-3xl);
+    }
+
+    .players-display {
+        font-size: var(--text-sm);
     }
 
     .sets-numbers {
@@ -855,7 +884,11 @@ body {
     }
 
     .team-name-display {
-        font-size: var(--text-lg);
+        font-size: var(--text-xl);
+    }
+
+    .players-display {
+        font-size: var(--text-xs);
     }
 
     .point-status-overlay {

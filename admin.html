@@ -19,6 +19,10 @@
                 </div>
             </div>
             <div class="header-status">
+                <div class="connection-status" id="connectionStatus">
+                    <span class="connection-indicator local" id="connectionIndicator"></span>
+                    <span id="connectionText">Local Mode</span>
+                </div>
                 <div class="set-indicator" id="setIndicator">Set 1</div>
                 <div class="set-timer" id="setTimer">00:00</div>
                 <div class="match-status-badge not-started" id="matchStatusBadge">Not Started</div>
@@ -32,7 +36,7 @@
             <h2>Match Setup</h2>
             <div class="teams-setup">
                 <div class="team-setup team1">
-                    <h3>Team 1 (Blue)</h3>
+                    <h3>Team 1</h3>
                     <div class="form-group">
                         <label for="team1Name">Team Name</label>
                         <input type="text" id="team1Name" class="input" placeholder="Enter team name" value="Team Alpha">
@@ -50,7 +54,7 @@
                 <div class="vs-divider">VS</div>
 
                 <div class="team-setup team2">
-                    <h3>Team 2 (Red)</h3>
+                    <h3>Team 2</h3>
                     <div class="form-group">
                         <label for="team2Name">Team Name</label>
                         <input type="text" id="team2Name" class="input" placeholder="Enter team name" value="Team Beta">
@@ -80,6 +84,20 @@
                 </div>
             </div>
 
+            <!-- Network Settings Section -->
+            <div class="network-settings" id="networkSettings">
+                <h3>Network Connection (Optional)</h3>
+                <p class="network-description">Connect to a server to control the scoreboard from multiple devices over WiFi.</p>
+                <div class="network-input-group">
+                    <div class="form-group">
+                        <label for="serverUrl">Server URL</label>
+                        <input type="text" id="serverUrl" class="input" placeholder="ws://192.168.1.x:3000" value="">
+                        <small class="input-hint">Leave empty for local-only mode (same browser tabs)</small>
+                    </div>
+                    <button class="btn btn-secondary" id="connectServerBtn">Connect to Server</button>
+                </div>
+            </div>
+
             <div class="start-match-container">
                 <button class="btn btn-primary btn-xl" id="startMatchBtn">
                     Start Match
@@ -104,6 +122,9 @@
                         <button class="btn btn-success btn-score" id="team1ScoreBtn">
                             +1 Point
                         </button>
+                        <button class="btn btn-secondary btn-decrement" id="team1DecrementBtn">
+                            -1 Point
+                        </button>
                         <button class="btn btn-danger btn-penalty" id="team1PenaltyBtn">
                             -2 Penalty (Argument)
                         </button>
@@ -126,6 +147,9 @@
                     <div class="score-controls">
                         <button class="btn btn-success btn-score" id="team2ScoreBtn">
                             +1 Point
+                        </button>
+                        <button class="btn btn-secondary btn-decrement" id="team2DecrementBtn">
+                            -1 Point
                         </button>
                         <button class="btn btn-danger btn-penalty" id="team2PenaltyBtn">
                             -2 Penalty (Argument)
@@ -156,6 +180,9 @@
 
                     <button class="btn btn-secondary" id="undoBtn">
                         Undo Last Action
+                    </button>
+                    <button class="btn btn-warning" id="switchSidesBtn">
+                        Switch Sides
                     </button>
                     <button class="btn btn-primary hidden" id="nextSetBtn">
                         Start Next Set
@@ -204,7 +231,13 @@
             <h2>SET <span id="setWonNumber">1</span> WON!</h2>
             <div class="winner-name" id="setWinnerName">Team Alpha</div>
             <div class="set-final-score" id="setFinalScore">21 - 15</div>
-            <div style="margin-top: var(--space-6);">
+            <div class="switch-sides-prompt" id="switchSidesPrompt">
+                <p>Teams should switch court sides (BWF Rule)</p>
+                <button class="btn btn-warning btn-lg" id="switchSidesSetBtn">
+                    Switch Sides
+                </button>
+            </div>
+            <div style="margin-top: var(--space-4);">
                 <button class="btn btn-primary btn-lg" id="continueMatchBtn">
                     Continue to Next Set
                 </button>
@@ -222,6 +255,19 @@
                 <button class="btn btn-primary btn-lg" id="newMatchBtn">
                     Start New Match
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Side Switch Confirmation Modal -->
+    <div class="side-switch-modal" id="sideSwitchModal">
+        <div class="side-switch-content">
+            <div class="side-switch-icon">&#x21C4;</div>
+            <h2>Switch Court Sides?</h2>
+            <p id="sideSwitchReason">Teams should switch sides between sets (BWF Rule)</p>
+            <div class="side-switch-buttons">
+                <button class="btn btn-success btn-lg" id="confirmSwitchBtn">Yes, Switch Sides</button>
+                <button class="btn btn-secondary btn-lg" id="declineSwitchBtn">No, Keep Current</button>
             </div>
         </div>
     </div>

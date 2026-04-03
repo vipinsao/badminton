@@ -11,6 +11,7 @@
         // Screens
         waitingScreen: document.getElementById('waitingScreen'),
         displayContainer: document.getElementById('displayContainer'),
+        scoreDisplay: document.getElementById('scoreDisplay'),
 
         // Header
         displaySetBadge: document.getElementById('displaySetBadge'),
@@ -94,6 +95,7 @@
         isSetPoint: null,
         isMatchPoint: null,
         breakActive: null,
+        sidesSwapped: null,
         teamsSet: false
     };
 
@@ -218,6 +220,14 @@
         // Update break overlay
         updateBreakOverlay(state);
 
+        // Update sides swapped state (CSS-based swap)
+        if (prevUIState.sidesSwapped !== state.sidesSwapped) {
+            if (elements.scoreDisplay) {
+                elements.scoreDisplay.classList.toggle('sides-swapped', state.sidesSwapped);
+            }
+            prevUIState.sidesSwapped = state.sidesSwapped;
+        }
+
         // Update point status only if changed
         if (prevUIState.isSetPoint !== state.isSetPoint || prevUIState.isMatchPoint !== state.isMatchPoint) {
             updatePointStatus(state);
@@ -269,6 +279,10 @@
                 clearTimeout(setWonTimeout);
                 setWonTimeout = null;
             }
+            // Reset sides swapped
+            if (elements.scoreDisplay) {
+                elements.scoreDisplay.classList.remove('sides-swapped');
+            }
             // Reset UI cache
             prevUIState = {
                 currentSet: null,
@@ -280,6 +294,7 @@
                 isSetPoint: null,
                 isMatchPoint: null,
                 breakActive: null,
+                sidesSwapped: null,
                 teamsSet: false
             };
         }
